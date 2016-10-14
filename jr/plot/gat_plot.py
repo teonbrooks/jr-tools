@@ -6,7 +6,7 @@ from .base import pretty_plot, plot_sem, plot_widths, pretty_colorbar
 def pretty_gat(scores, times=None, chance=0, ax=None, sig=None, cmap='RdBu_r',
                clim=None, colorbar=True, xlabel='Test Times',
                ylabel='Train Times', sfreq=250, diagonal=None,
-               test_times=None):
+               test_times=None, alpha=1):
     scores = np.array(scores)
 
     if times is None:
@@ -38,14 +38,18 @@ def pretty_gat(scores, times=None, chance=0, ax=None, sig=None, cmap='RdBu_r',
 
     # plot score
     im = ax.matshow(scores, extent=extent, cmap=cmap, origin='lower',
-                    vmin=vmin, vmax=vmax, aspect='equal')
+                    vmin=vmin, vmax=vmax, aspect='equal', alpha=alpha)
 
     # plot sig
     if sig is not None:
-        sig = np.array(sig)
-        xx, yy = np.meshgrid(test_times, times, copy=False, indexing='xy')
-        ax.contour(xx, yy, sig, colors='black', levels=[0],
-                   linestyles='dotted')
+        # sig = np.array(sig)
+        # xx, yy = np.meshgrid(test_times, times, copy=False, indexing='xy')
+        # ax.contour(xx, yy, sig, colors='black', levels=[0],
+        #            linestyles='dotted')
+        sig = np.ma.masked_where(sig == False, sig)
+        ax.matshow(sig, extent=extent, cmap=cmap, origin='lower',
+                    vmin=vmin, vmax=vmax, aspect='equal')
+
     ax.axhline(0, color='k')
     ax.axvline(0, color='k')
     if colorbar:
@@ -77,7 +81,7 @@ def pretty_gat(scores, times=None, chance=0, ax=None, sig=None, cmap='RdBu_r',
 
 
 def pretty_decod(scores, times=None, chance=0, ax=None, sig=None, width=3.,
-                 color='k', fill=False, xlabel='Times', sfreq=250, alpha=.75):
+                 color='k', fill=False, fill_color='orange', xlabel='Times', sfreq=250, alpha=.75):
     scores = np.array(scores)
 
     if (scores.ndim == 1) or (scores.shape[1] <= 1):
@@ -104,7 +108,7 @@ def pretty_decod(scores, times=None, chance=0, ax=None, sig=None, width=3.,
         widths = width * sig
         if fill:
             scores_sig = (chance + (scores_m - chance) * sig)
-            ax.fill_between(times, chance, scores_sig, color=color,
+            ax.fill_between(times, chance, scores_sig, color=fill_color,
                             alpha=alpha, linewidth=0)
             ax.plot(times, scores_m, color='k')
             plot_widths(times, scores_m, widths, ax=ax, color='k')

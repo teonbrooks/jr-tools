@@ -243,8 +243,11 @@ def pretty_colorbar(im=None, ax=None, ticks=None, ticklabels=None, nticks=3,
             clim = im.get_clim()
         ticks = np.linspace(clim[0], clim[1], nticks)
     cb = plt.colorbar(im, ax=ax, ticks=ticks, **kwargs)
+
     if ticklabels is None:
         ticklabels = ['%.2f' % ii for ii in ticks]
+    cb.set_alpha(1)
+    cb.draw_all()
     cb.ax.set_yticklabels(ticklabels, color='dimgray')
     cb.ax.xaxis.label.set_color('dimgray')
     cb.ax.yaxis.label.set_color('dimgray')
